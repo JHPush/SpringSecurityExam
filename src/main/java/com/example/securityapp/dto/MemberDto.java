@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
+import lombok.ToString;
+
+@ToString
 public class MemberDto extends User {
     private String email;
     private String password;

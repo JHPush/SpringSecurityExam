@@ -11,10 +11,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.example.securityapp.security.filter.JwtCheckFilter;
 import com.example.securityapp.security.handler.ApiLoginFailureHandler;
 import com.example.securityapp.security.handler.ApiLoginSuccessHandler;
 
@@ -56,6 +58,9 @@ public class CustomSecurityConfig {
             config.successHandler(new ApiLoginSuccessHandler());
             config.failureHandler(new ApiLoginFailureHandler());
         });
+
+        http.addFilterBefore(new JwtCheckFilter(), UsernamePasswordAuthenticationFilter.class); // beforeFilter 이전에 필터 등록하는거임
+        // jwtCheckFilter 에서 이미 인증정보를 컨텍스트에 바인딩 시킨 경우 Username~필터는 그냥 스킵됨 
         
         return http.build();
     }
