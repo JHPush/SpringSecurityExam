@@ -47,6 +47,7 @@ public class JwtCheckFilter extends OncePerRequestFilter { // 요청할때마다
         try {
             String accessToken = header.split(" ")[1]; 
             Map<String, Object> claims = JwtUtil.validationToken(accessToken);  
+
             log.info("email : {} ", claims.get("email"));
             log.info("nickname : {} ", claims.get("nickname"));
             log.info("password : {} ", claims.get("password"));
@@ -65,6 +66,7 @@ public class JwtCheckFilter extends OncePerRequestFilter { // 요청할때마다
                 new UsernamePasswordAuthenticationToken(memberDto, memberDto.getPassword(), memberDto.getAuthorities());
             
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            
             filterChain.doFilter(request, response); // 다음 필터 수행, 다음 필터 없을때는 디스패처 서블릿에 전달 
             
         } catch (Exception e) {

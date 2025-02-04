@@ -28,8 +28,11 @@ public class ApiLoginSuccessHandler implements AuthenticationSuccessHandler{
         MemberDto memberDto = (MemberDto)authentication.getPrincipal();
         Map<String,Object> claims = memberDto.getClaims();
         String accessToken = JwtUtil.generateToken(claims, 10);
+        String refreshToken = JwtUtil.generateToken(claims, 60*24);
 
         claims.put("accessToken", accessToken);
+        claims.put("refreshToken", refreshToken);
+
         Gson gson = new Gson();
         String jsonStr = gson.toJson(claims);
         response.setContentType("application/json; charset=UTF-8");
