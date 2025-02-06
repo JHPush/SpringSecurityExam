@@ -19,6 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.example.securityapp.security.filter.JwtCheckFilter;
 import com.example.securityapp.security.handler.ApiLoginFailureHandler;
 import com.example.securityapp.security.handler.ApiLoginSuccessHandler;
+import com.example.securityapp.security.handler.CustomExceptionHandler;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,6 +63,10 @@ public class CustomSecurityConfig {
         http.addFilterBefore(new JwtCheckFilter(), UsernamePasswordAuthenticationFilter.class); // beforeFilter 이전에 필터 등록하는거임
         // jwtCheckFilter 에서 이미 인증정보를 컨텍스트에 바인딩 시킨 경우 Username~필터는 그냥 스킵됨 
         
+        http.exceptionHandling(config->{
+            config.accessDeniedHandler(new CustomExceptionHandler());
+        });
+
         return http.build();
     }
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -45,7 +46,9 @@ public class JwtCheckFilter extends OncePerRequestFilter { // 요청할때마다
         String header = request.getHeader("Authorization");
         log.info("header : {} ",header);
         try {
-            String accessToken = header.split(" ")[1]; 
+            
+            String accessToken = (header.contains(" "))? header.split(" ")[1] : header; 
+
             Map<String, Object> claims = JwtUtil.validationToken(accessToken);  
 
             log.info("email : {} ", claims.get("email"));
@@ -70,7 +73,13 @@ public class JwtCheckFilter extends OncePerRequestFilter { // 요청할때마다
             filterChain.doFilter(request, response); // 다음 필터 수행, 다음 필터 없을때는 디스패처 서블릿에 전달 
             
         } catch (Exception e) {
-            log.error("Error : {}", e.getMessage());
+            log.error("Error : {}", e);
+            
+            Throwable cause = e.getCause();
+            if(cause instanceof AccessDeniedException){
+                throw (AccessDeniedException)cause;
+            }
+
             Gson gson = new Gson();
             String jsonStr = gson.toJson(Map.of("error", "ERROR_ACCESS_TOKEN"));
             response.setContentType("application/json; charset=UTF-8");
